@@ -1,0 +1,119 @@
+#บันทึกรูป UI ของโปรแกรมตนเอง แสดงใน readme.md ของตนเองพร้อมทั้งใส่รายละเอียดโปรแกรม
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+class CoffeeMachineUI {
+    private CoffeeMachine machine;
+    private JFrame frame;
+    private JComboBox<String> coffeeType;
+    private JComboBox<String> size;
+    private JCheckBox sugar;
+    private JCheckBox milk;
+    private JTextArea output;
+    private JButton orderButton;
+
+    public CoffeeMachineUI(CoffeeMachine machine) {
+        this.machine = machine;
+        frame = new JFrame("Coffee Machine");
+        frame.setSize(400, 300);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new GridLayout(6, 2));
+
+        coffeeType = new JComboBox<>(new String[]{"Espresso", "Latte", "Cappuccino"});
+        size = new JComboBox<>(new String[]{"Small", "Medium", "Large"});
+        sugar = new JCheckBox("Add Sugar");
+        milk = new JCheckBox("Add Milk");
+        orderButton = new JButton("Order Coffee");
+        output = new JTextArea();
+        output.setEditable(false);
+
+        frame.add(new JLabel("Select Coffee Type:"));
+        frame.add(coffeeType);
+        frame.add(new JLabel("Select Size:"));
+        frame.add(size);
+        frame.add(sugar);
+        frame.add(milk);
+        frame.add(orderButton);
+        frame.add(new JScrollPane(output));
+
+        orderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String type = (String) coffeeType.getSelectedItem();
+                String selectedSize = (String) size.getSelectedItem();
+                boolean addSugar = sugar.isSelected();
+                boolean addMilk = milk.isSelected();
+
+                Coffee coffee = machine.brewCoffee(type, selectedSize, addSugar, addMilk);
+                if (coffee != null) {
+                    output.setText("Your order: " + coffee.getDescription());
+                } else {
+                    output.setText("Payment failed or machine is off.");
+                }
+            }
+        });
+
+        frame.setVisible(true);
+    }
+}
+
+public class CoffeeShop {
+    public static void main(String[] args) {
+        PaymentSystem paymentSystem = new PaymentSystem(20.0);
+        CoffeeMachine machine = new CoffeeMachine(paymentSystem);
+        machine.turnOn();
+        new CoffeeMachineUI(machine);
+    }
+}
+
+/*
+# Coffee Machine Application
+
+This Java application simulates a coffee machine with a graphical user interface (GUI). Users can select their preferred coffee type, size, and add sugar or milk. The machine processes the order and displays the coffee details.
+
+## Features
+- Select coffee type: Espresso, Latte, Cappuccino
+- Choose size: Small, Medium, Large
+- Option to add sugar and milk
+- Displays order details upon successful payment
+
+## User Interface
+The user-friendly interface allows easy selection of coffee preferences.
+
+![Coffee Machine UI](A_user_interface_design_for_a_coffee_machine_appli.png)
+
+## Class Diagram
+The following class diagram illustrates the relationships between the classes involved in the coffee machine application.
+
+![Class Diagram](A_UML_class_diagram_illustrating_a_Coffee_Machine_.png)
+
+## Program Description
+The application consists of the following classes:
+
+- **CoffeeMachine**: Manages the coffee brewing process, tracks resource levels (water, beans, milk, sugar), and handles power status.
+- **User**: Represents the user interacting with the coffee machine, selecting their preferred coffee type.
+- **Coffee**: Represents the coffee object with attributes like type, size, sugar, and milk preferences.
+- **PaymentSystem**: Handles payment processing, ensuring the user has sufficient balance before brewing coffee.
+
+## How to Run
+1. Compile the Java files:
+   ```
+   javac CoffeeShop.java
+   ```
+2. Run the application:
+   ```
+   java CoffeeShop
+   ```
+
+## Example Usage
+1. Select your preferred coffee type (Espresso, Latte, Cappuccino).
+2. Choose the size (Small, Medium, Large).
+3. Optionally, add sugar and milk.
+4. Click 'Order Coffee' to process your order.
+5. The application will display the details of your coffee if the payment is successful.
+
+Enjoy your coffee!
+*/
+
