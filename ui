@@ -1,0 +1,69 @@
+#ออกแบบส่วน ui
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+class CoffeeMachineUI {
+    private CoffeeMachine machine;
+    private JFrame frame;
+    private JComboBox<String> coffeeType;
+    private JComboBox<String> size;
+    private JCheckBox sugar;
+    private JCheckBox milk;
+    private JTextArea output;
+    private JButton orderButton;
+
+    public CoffeeMachineUI(CoffeeMachine machine) {
+        this.machine = machine;
+        frame = new JFrame("Coffee Machine");
+        frame.setSize(400, 300);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new GridLayout(6, 2));
+
+        coffeeType = new JComboBox<>(new String[]{"Espresso", "Latte", "Cappuccino"});
+        size = new JComboBox<>(new String[]{"Small", "Medium", "Large"});
+        sugar = new JCheckBox("Add Sugar");
+        milk = new JCheckBox("Add Milk");
+        orderButton = new JButton("Order Coffee");
+        output = new JTextArea();
+        output.setEditable(false);
+
+        frame.add(new JLabel("Select Coffee Type:"));
+        frame.add(coffeeType);
+        frame.add(new JLabel("Select Size:"));
+        frame.add(size);
+        frame.add(sugar);
+        frame.add(milk);
+        frame.add(orderButton);
+        frame.add(new JScrollPane(output));
+
+        orderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String type = (String) coffeeType.getSelectedItem();
+                String selectedSize = (String) size.getSelectedItem();
+                boolean addSugar = sugar.isSelected();
+                boolean addMilk = milk.isSelected();
+
+                Coffee coffee = machine.brewCoffee(type, selectedSize, addSugar, addMilk);
+                if (coffee != null) {
+                    output.setText("Your order: " + coffee.getDescription());
+                } else {
+                    output.setText("Payment failed or machine is off.");
+                }
+            }
+        });
+
+        frame.setVisible(true);
+    }
+}
+
+public class CoffeeShop {
+    public static void main(String[] args) {
+        PaymentSystem paymentSystem = new PaymentSystem(20.0);
+        CoffeeMachine machine = new CoffeeMachine(paymentSystem);
+        machine.turnOn();
+        new CoffeeMachineUI(machine);
+    }
+}
